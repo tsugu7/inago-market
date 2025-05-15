@@ -89,8 +89,21 @@ const VolumeChart = ({ data, selectedContract }) => {
       .attr('y', d => d.volume >= 0 ? y(d.volume) : y(0))
       .attr('width', x.bandwidth())
       .attr('height', d => Math.abs(y(d.volume) - y(0)))
-      .attr('rx', 2)
-      .attr('ry', 2);
+      .attr('rx', 0) // 角を丸めない
+      .attr('ry', 0); // 角を丸めない
+      
+    // 各バーに値を表示
+    svg.selectAll('.bar-value')
+      .data(data)
+      .enter()
+      .append('text')
+      .attr('class', 'bar-value')
+      .attr('x', d => x(d.timestamp) + x.bandwidth() / 2)
+      .attr('y', d => d.volume >= 0 ? y(d.volume) - 5 : y(0) + 15)
+      .attr('text-anchor', 'middle')
+      .style('font-size', '9px')
+      .style('fill', '#f0f0f0')
+      .text(d => Math.abs(d.volume) > 10 ? Math.round(d.volume) : '');
 
     // 選択された契約のタイトル
     svg.append('text')
