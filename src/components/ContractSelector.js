@@ -10,7 +10,7 @@ const ContractSelector = ({ contracts, selectedContract, onContractChange }) => 
       <select value={selectedContract} onChange={handleChange}>
         {contracts.map(contract => (
           <option key={contract.id} value={contract.id}>
-            {contract.name} ({contract.id})
+            {contract.name}
           </option>
         ))}
       </select>

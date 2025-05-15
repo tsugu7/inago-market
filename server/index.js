@@ -120,7 +120,7 @@ io.on('connection', (socket) => {
       const mockData = generateMockData(contract.id);
       return {
         id: contract.id,
-        name: contract.name,
+        name: contract.name, // 契約名を空文字列に設定
         price: mockData.price,
         cumulativeVolume: mockData.volume,
         isPositive: mockData.isPositive
