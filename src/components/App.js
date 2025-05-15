@@ -56,18 +56,28 @@ const App = () => {
     const now = Date.now();
     const selectedContractData = contractsData.find(c => c.id === selectedContract);
     
-    // 5秒ごとに新しいデータポイントを追加
-    if (volumeData.length === 0 || now - volumeData[volumeData.length - 1].timestamp >= 5000) {
-      const newVolumeData = [...(volumeData.length >= 12 ? volumeData.slice(1) : volumeData), {
-        timestamp: now,
-        volume: selectedContractData ? selectedContractData.cumulativeVolume : 0
+    // 最新のデータを取得
+    const latestVolume = selectedContractData ? selectedContractData.cumulativeVolume : 0;
+    
+    // 現在の時間を5秒単位に丸める（5秒ごとのタイムスロット）
+    const timeSlot = Math.floor(now / 5000) * 5000;
+    
+    // 最後のデータポイントのタイムスロットを取得
+    const lastTimeSlot = volumeData.length > 0 ? 
+      Math.floor(volumeData[volumeData.length - 1].timestamp / 5000) * 5000 : 0;
+    
+    if (volumeData.length === 0 || timeSlot > lastTimeSlot) {
+      // 新しいタイムスロットの場合、新しいデータポイントを追加
+      const newVolumeData = [...(volumeData.length >= 30 ? volumeData.slice(1) : volumeData), {
+        timestamp: timeSlot,
+        volume: latestVolume
       }];
       setVolumeData(newVolumeData);
     } else {
-      // 最後のデータポイントを更新
+      // 同じタイムスロット内の場合、最後のデータポイントを更新
       const newVolumeData = [...volumeData.slice(0, -1), {
-        timestamp: volumeData[volumeData.length - 1].timestamp,
-        volume: selectedContractData ? selectedContractData.cumulativeVolume : 0
+        timestamp: lastTimeSlot,
+        volume: latestVolume
       }];
       setVolumeData(newVolumeData);
     }

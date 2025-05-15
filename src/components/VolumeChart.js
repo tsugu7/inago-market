@@ -45,9 +45,9 @@ const VolumeChart = ({ data, selectedContract }) => {
       .call(d3.axisBottom(x)
         .tickFormat(d => {
           const date = new Date(d);
-          return `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+          return `${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
         })
-        .tickValues(data.filter((_, i) => i % 2 === 0).map(d => d.timestamp))
+        .tickValues(data.filter((_, i) => i % 3 === 0).map(d => d.timestamp)) // 3つごとにティックを表示
       );
 
     // Y軸の描画
