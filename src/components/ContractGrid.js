@@ -77,6 +77,7 @@ const ContractGrid = ({ contracts }) => {
         <div key={contract.id} className="contract-card">
           <div className="contract-header">
             <div className="contract-id">{contract.id}</div>
+            <div className="contract-name">{contract.name}</div>
           </div>
           <div className={getPriceClassName(contract.id)}>
             {formatPrice(contract.price)}

@@ -70,17 +70,41 @@ h1 {
   border: 1px solid #333;
   display: flex;
   flex-direction: column;
-  height: 200px; /* 固定高さを設定 */
+  height: 220px; /* 高さを増やす */
+  overflow: hidden; /* はみ出し防止 */
 }
 
-.contract-card h3 {
-  font-size: 1.2rem;
+.contract-header {
   margin-bottom: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.contract-id {
+  font-size: 1.2rem;
+  font-weight: bold;
   color: #f0f0f0;
+  margin-bottom: 5px;
+  display: block;
+  width: 100%;
+}
+
+.contract-name {
+  font-size: 0.9rem; /* フォントサイズを小さく */
+  color: #cccccc;
+  display: block;
+  width: 100%;
+  /* white-space: nowrap を削除 */
+  overflow: hidden; /* はみ出し防止 */
+  /* text-overflow: ellipsis を削除 */
+  line-height: 1.2; /* 行間を狭く */
+  max-height: 2.4em; /* 最大2行まで表示 */
 }
 
 .contract-card .price {
-  font-size: 1.8rem;
+  font-size: 2.2rem; /* フォントサイズを大きく */
   font-weight: bold;
   margin: 15px 0;
   text-align: center;
