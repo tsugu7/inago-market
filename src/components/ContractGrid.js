@@ -15,7 +15,7 @@ const ContractGrid = ({ contracts }) => {
     <div className="contracts-grid">
       {contracts.map(contract => (
         <div key={contract.id} className="contract-card">
-          <h3>{contract.name} ({contract.id})</h3>
+          <h3>{contract.id}<br />{contract.name}</h3>
           <div className="price">{formatPrice(contract.price)}</div>
           
           <div className="volume-bar">
