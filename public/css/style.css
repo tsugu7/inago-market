@@ -77,9 +77,27 @@ h1 {
 }
 
 .contract-card .price {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin: 15px 0;
+  text-align: center;
+  color: #f0f0f0; /* デフォルトは白 */
+}
+
+.contract-card .price-up {
+  color: #4CAF50; /* 上昇時は緑 */
+}
+
+.contract-card .price-down {
+  color: #F44336; /* 下降時は赤 */
+}
+
+.volume-bar-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 80px; /* コンテナに固定高さを設定 */
+  margin-top: auto; /* 下揃えのために上部マージンを自動に */
 }
 
 .volume-bar {
