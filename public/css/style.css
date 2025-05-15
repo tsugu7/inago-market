@@ -1,0 +1,139 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #1a1a1a;
+  color: #f0f0f0;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #333;
+}
+
+h1 {
+  font-size: 1.5rem;
+  color: #4CAF50;
+}
+
+.contract-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.contract-selector select {
+  padding: 8px 12px;
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.chart-container {
+  width: 100%;
+  height: 400px;
+  background-color: #222;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #333;
+}
+
+.contracts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.contract-card {
+  background-color: #222;
+  border-radius: 4px;
+  padding: 15px;
+  border: 1px solid #333;
+}
+
+.contract-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #f0f0f0;
+}
+
+.contract-card .price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.volume-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #333;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.volume-bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.volume-bar-fill.positive {
+  background-color: #4CAF50;
+}
+
+.volume-bar-fill.negative {
+  background-color: #F44336;
+}
+
+.volume-value {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+/* Chart styles */
+.bar {
+  transition: height 0.3s ease;
+}
+
+.bar.positive {
+  fill: #4CAF50;
+}
+
+.bar.negative {
+  fill: #F44336;
+}
+
+.axis text {
+  fill: #999;
+  font-size: 10px;
+}
+
+.axis path,
+.axis line {
+  stroke: #555;
+}
+
+.axis-label {
+  fill: #999;
+  font-size: 12px;
+}

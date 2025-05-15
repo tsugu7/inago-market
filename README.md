@@ -2,123 +2,97 @@
 
 リアルタイム市場データ可視化Webアプリケーション
 
+## ドキュメント
+
+- [API仕様書](basic-spec.md) - ProjectX Gateway APIの詳細仕様
+- [設計ドキュメント](designdoc.md) - アプリケーションの設計詳細
+
 ## 概要
 
-inago-marketは、先物市場のデータをAPI経由でリアルタイムに取得し、視覚的に表示するWebアプリケーションです。特に売買出来高（約定数）に焦点を当て、トレーダーが市場の動向をリアルタイムで把握できるようにします。
+inago-marketは、ProjectX Gateway APIを使用してリアルタイムの市場データを可視化するWebアプリケーションです。このアプリケーションでは、複数の先物契約の価格データと出来高をリアルタイムで表示し、トレーダーが市場の動向を素早く把握できるようにします。
 
-本プロジェクトは、[ProjectX Gateway API](basic-spec.md)を利用して市場データを取得し、[イナゴフライヤー](target-spec.md)のようなリアルタイム可視化インターフェースを提供します。
+## 機能
 
-## 主要機能
-
-- **複数契約の監視**: ES, MSE, NQ, MNQ, CL, MCL, GC, MGCなどの先物契約をリアルタイムで監視
-- **リアルタイム出来高表示**: 選択した契約の売買出来高を棒グラフでリアルタイム表示
-- **マルチ契約情報パネル**: 全対象契約の現在価格と累積約定数を一覧表示
-- **視覚的データ表現**: 買い注文（正の値）は緑色、売り注文（負の値）は赤色で表示
-- **動的更新**: 棒グラフは1秒ごとに更新、5秒単位でX軸方向に進行
-
-## スクリーンショット
-
-（実装後にスクリーンショットを追加予定）
+- リアルタイムの価格データ表示
+- 出来高チャートの可視化
+- 複数の契約の同時モニタリング
+- WebSocketを使用したリアルタイムデータ更新
+- レスポンシブデザイン
 
 ## 技術スタック
 
-### フロントエンド
-- React.js
-- Redux または Context API
-- D3.js または Chart.js（データ可視化）
-- WebSocket（リアルタイム通信）
+- **フロントエンド**: React, D3.js
+- **バックエンド**: Node.js, Express
+- **通信**: Socket.IO (WebSocket)
+- **ビルドツール**: Webpack, Babel
 
-### バックエンド
-- Node.js + Express
-- WebSocket（Socket.io または ws）
-- RxJS（リアクティブプログラミング）
-
-### インフラストラクチャ
-- Docker + Kubernetes または AWS
-- CI/CD: GitHub Actions
-
-## インストールと実行
-
-### 前提条件
-- Node.js 14.0以上
-- npm 6.0以上
-- ProjectX Gateway APIのアクセス権（ユーザー名とAPIキー）
-
-### インストール手順
+## インストール
 
 ```bash
 # リポジトリのクローン
-git clone https://github.com/tsugu7/inago-market.git
+git clone https://github.com/yourusername/inago-market.git
 cd inago-market
 
-# 依存パッケージのインストール
+# 依存関係のインストール
 npm install
-
-# 環境変数の設定
-cp .env.example .env
-# .envファイルを編集してAPIキーなどを設定
-
-# 開発サーバーの起動
-npm run dev
 ```
 
 ## 使用方法
 
-1. アプリケーションを起動すると、デフォルトでNQ（E-mini NASDAQ-100先物）の出来高データが表示されます
-2. 画面上部の選択リストから監視したい契約を選択できます
-3. 選択した契約の出来高データがリアルタイムで棒グラフに表示されます
-4. 画面下部では全ての対象契約の現在価格と出来高の概要を確認できます
+### 開発モード
 
-## プロジェクト構造
-
-```
-inago-market/
-├── public/              # 静的ファイル
-├── src/                 # ソースコード
-│   ├── components/      # Reactコンポーネント
-│   ├── services/        # APIサービス
-│   ├── store/           # 状態管理
-│   ├── utils/           # ユーティリティ関数
-│   └── App.js           # メインアプリケーション
-├── server/              # バックエンドサーバー
-│   ├── api/             # REST API
-│   ├── websocket/       # WebSocketサーバー
-│   └── services/        # バックエンドサービス
-├── docs/                # ドキュメント
-│   ├── basic-spec.md    # ProjectX Gateway API仕様
-│   ├── target-spec.md   # イナゴフライヤー仕様
-│   └── designdoc.md     # 設計ドキュメント
-├── .env.example         # 環境変数サンプル
-└── README.md            # プロジェクト概要
+```bash
+# 開発サーバーの起動
+npm run dev
 ```
 
-## 開発ロードマップ
+### 本番ビルド
 
-### フェーズ1: 基本機能実装
-- バックエンドの市場データAPI連携
-- WebSocketサーバーの実装
-- 基本的なUI実装
-- 単一契約の出来高表示
+```bash
+# アプリケーションのビルド
+npm run build
 
-### フェーズ2: 機能拡張
-- 複数契約の同時監視
-- 契約切り替え機能
-- データの視覚化強化
-- パフォーマンス最適化
+# 本番サーバーの起動
+npm start
+```
 
-### フェーズ3: 高度な機能
-- ユーザー設定の保存
-- アラート機能
-- 追加の分析指標
-- モバイル対応の強化
+ブラウザで http://localhost:3000 にアクセスすると、アプリケーションが表示されます。
 
-## 設計ドキュメント
+## アプリケーション構成
 
-詳細な設計情報は以下のドキュメントを参照してください：
+### コンポーネント
 
-- [ProjectX Gateway API仕様](basic-spec.md)
-- [イナゴフライヤー仕様](target-spec.md)
-- [アプリケーション設計書](designdoc.md)
+- **ContractSelector**: 表示する契約を選択するドロップダウン
+- **VolumeChart**: 選択された契約の出来高チャート
+- **ContractGrid**: すべての契約の概要を表示するグリッド
+
+### データフロー
+
+1. サーバーがモックデータを生成（または実際のAPIからデータを取得）
+2. WebSocketを通じてクライアントにデータを送信
+3. クライアントがデータを受信し、状態を更新
+4. UIコンポーネントが更新された状態に基づいて再レンダリング
+
+## 設定
+
+現在のバージョンでは、以下の先物契約をサポートしています：
+
+- E-mini S&P 500 (ES)
+- Micro E-mini S&P 500 (MSE)
+- E-mini NASDAQ-100 (NQ)
+- Micro E-mini NASDAQ-100 (MNQ)
+- 原油先物 (CL)
+- Micro 原油先物 (MCL)
+- 金先物 (GC)
+- Micro 金先物 (MGC)
+
+## 拡張計画
+
+- 実際のProjectX Gateway APIとの接続
+- 追加のチャートタイプ（ローソク足、ライン等）
+- ユーザー認証の実装
+- 注文発注機能の追加
+- モバイルアプリケーションの開発
 
 ## ライセンス
 
@@ -126,6 +100,4 @@ MIT
 
 ## 謝辞
 
-本プロジェクトは以下のリソースを参考にしています：
-- [ProjectX Gateway API](https://gateway.docs.projectx.com/)
-- [イナゴフライヤー](https://inagoflyer.appspot.com/btcmac)
+このプロジェクトは、ProjectX Gateway APIのドキュメントとサンプルコードを参考にしています。
