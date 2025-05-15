@@ -22,12 +22,19 @@ const App = () => {
 
   // WebSocketの初期化
   useEffect(() => {
-    // 初期チャートデータの生成
-    const initialVolumeData = Array(12).fill(0).map((_, i) => ({
-      timestamp: Date.now() - (11 - i) * 5000,
-      volume: 0
-    }));
+    // 初期チャートデータの生成（ランダムな値を持つデータポイント）
+    const now = Date.now();
+    const initialVolumeData = Array(12).fill(0).map((_, i) => {
+      const timestamp = now - (11 - i) * 5000;
+      // ランダムな出来高（-100〜100の範囲）
+      const randomVolume = Math.floor(Math.random() * 200) - 100;
+      return {
+        timestamp,
+        volume: i === 11 ? randomVolume : Math.floor(Math.random() * 40) - 20 // 最新のデータポイントは大きめの値
+      };
+    });
     setVolumeData(initialVolumeData);
+    console.log("Initial volume data:", initialVolumeData);
 
     // WebSocket接続
     const newSocket = io('http://localhost:3000');
@@ -66,21 +73,38 @@ const App = () => {
     const lastTimeSlot = volumeData.length > 0 ? 
       Math.floor(volumeData[volumeData.length - 1].timestamp / 5000) * 5000 : 0;
     
-    if (volumeData.length === 0 || timeSlot > lastTimeSlot) {
+    // 新しいデータポイントを作成
+    const newDataPoint = {
+      timestamp: timeSlot,
+      volume: latestVolume
+    };
+    
+    // 現在のデータ配列をコピー
+    let newVolumeData = [...volumeData];
+    
+    if (volumeData.length === 0) {
+      // データがない場合は初期データを生成
+      newVolumeData = Array(12).fill(0).map((_, i) => {
+        const timestamp = timeSlot - (11 - i) * 5000;
+        return {
+          timestamp,
+          volume: i === 11 ? latestVolume : Math.floor(Math.random() * 40) - 20
+        };
+      });
+    } else if (timeSlot > lastTimeSlot) {
       // 新しいタイムスロットの場合、新しいデータポイントを追加
-      const newVolumeData = [...(volumeData.length >= 30 ? volumeData.slice(1) : volumeData), {
-        timestamp: timeSlot,
-        volume: latestVolume
-      }];
-      setVolumeData(newVolumeData);
+      newVolumeData.push(newDataPoint);
+      // 最大30ポイントを維持
+      if (newVolumeData.length > 30) {
+        newVolumeData = newVolumeData.slice(-30);
+      }
     } else {
       // 同じタイムスロット内の場合、最後のデータポイントを更新
-      const newVolumeData = [...volumeData.slice(0, -1), {
-        timestamp: lastTimeSlot,
-        volume: latestVolume
-      }];
-      setVolumeData(newVolumeData);
+      newVolumeData[newVolumeData.length - 1] = newDataPoint;
     }
+    
+    console.log("Chart data:", newVolumeData);
+    setVolumeData(newVolumeData);
   };
 
   // 契約選択の変更ハンドラ

@@ -25,6 +25,9 @@ const VolumeChart = ({ data, selectedContract }) => {
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
+    // データをフィルタリング（値が0でないデータポイントのみ）
+    const filteredData = data.filter(d => d.volume !== 0);
+    
     // X軸のスケール（時間）
     const x = d3.scaleBand()
       .domain(data.map(d => d.timestamp))
@@ -37,6 +40,9 @@ const VolumeChart = ({ data, selectedContract }) => {
       .domain([-maxVolume, maxVolume])
       .range([height, 0])
       .nice();
+      
+    // コンソールにデータを出力（デバッグ用）
+    console.log("Chart data:", data);
 
     // X軸の描画
     svg.append('g')
