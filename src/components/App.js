@@ -2,14 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import ContractSelector from './ContractSelector';
 import VolumeChart from './VolumeChart';
 import ContractGrid from './ContractGrid';
-import { io } from 'socket.io-client';
 import WebSocketClient from '../utils/websocketClient';
 
 const App = () => {
   const [selectedContract, setSelectedContract] = useState('ES');
   const [contracts, setContracts] = useState([]);
   const [volumeData, setVolumeData] = useState([]);
-  const [socket, setSocket] = useState(null);
   const [isConnectedToExchange, setIsConnectedToExchange] = useState(false);
   const [error, setError] = useState(null);
   const wsClientRef = useRef(null);
@@ -52,6 +50,10 @@ const App = () => {
               processDepthData(contractId, data);
             }
           },
+          onQuoteData: (contractId, data) => {
+            // 相場データを処理
+            processQuoteData(contractId, data);
+          },
           onError: (errorMsg) => {
             console.error('WebSocketエラー:', errorMsg);
             setError(errorMsg);
@@ -72,44 +74,22 @@ const App = () => {
       }
     };
     
-    // 初期チャートデータの生成（ランダムな値を持つデータポイント）
+    // 初期チャートデータの生成（空のデータポイント）
     const now = Date.now();
     const initialVolumeData = Array(12).fill(0).map((_, i) => {
       const timestamp = now - (11 - i) * 5000;
-      // ランダムな出来高（-100〜100の範囲）
-      const randomVolume = Math.floor(Math.random() * 200) - 100;
       return {
         timestamp,
-        volume: i === 11 ? randomVolume : Math.floor(Math.random() * 40) - 20 // 最新のデータポイントは大きめの値
+        volume: 0 // 初期値は0
       };
     });
     setVolumeData(initialVolumeData);
     console.log("Initial volume data:", initialVolumeData);
 
-    // ローカルサーバーのWebSocket接続（モックデータ用）
-    const newSocket = io('http://localhost:3000');
-    setSocket(newSocket);
-
-    // 契約リストの受信
-    newSocket.on('contracts', (data) => {
-      setAvailableContracts(data);
-    });
-
-    // マーケットデータの受信
-    newSocket.on('market_data', (data) => {
-      setContracts(data);
-      updateChartData(data);
-    });
-
     // 取引所WebSocketの初期化
     initExchangeWebSocket();
 
     return () => {
-      // ローカルサーバーのWebSocket切断
-      if (newSocket) {
-        newSocket.disconnect();
-      }
-      
       // 取引所WebSocketの切断
       if (wsClientRef.current) {
         wsClientRef.current.disconnect();
@@ -171,55 +151,47 @@ const App = () => {
     }
   };
 
-  // チャートデータの更新
-  const updateChartData = (contractsData) => {
-    const now = Date.now();
-    const selectedContractData = contractsData.find(c => c.id === selectedContract);
+
+  // 相場データの処理
+  const processQuoteData = (contractId, quoteData) => {
+    // 現在の契約リストをコピー
+    const updatedContracts = [...contracts];
     
-    // 最新のデータを取得
-    const latestVolume = selectedContractData ? selectedContractData.cumulativeVolume : 0;
+    // 契約IDに一致する契約を検索
+    const contractIndex = updatedContracts.findIndex(c => c.id === contractId);
     
-    // 現在の時間を5秒単位に丸める（5秒ごとのタイムスロット）
-    const timeSlot = Math.floor(now / 5000) * 5000;
+    // 相場データから必要な情報を抽出
+    const price = quoteData.price || 0;
+    const cumulativeVolume = quoteData.volume || 0;
+    const isPositive = cumulativeVolume >= 0;
     
-    // 最後のデータポイントのタイムスロットを取得
-    const lastTimeSlot = volumeData.length > 0 ? 
-      Math.floor(volumeData[volumeData.length - 1].timestamp / 5000) * 5000 : 0;
+    // 契約名を取得
+    const contractInfo = availableContracts.find(c => c.id === contractId);
+    const name = contractInfo ? contractInfo.name : '';
     
-    // 新しいデータポイントを作成
-    const newDataPoint = {
-      timestamp: timeSlot,
-      volume: latestVolume
-    };
-    
-    // 現在のデータ配列をコピー
-    let newVolumeData = [...volumeData];
-    
-    if (volumeData.length === 0) {
-      // データがない場合は初期データを生成
-      newVolumeData = Array(12).fill(0).map((_, i) => {
-        const timestamp = timeSlot - (11 - i) * 5000;
-        return {
-          timestamp,
-          volume: i === 11 ? latestVolume : Math.floor(Math.random() * 40) - 20
-        };
-      });
-    } else if (timeSlot > lastTimeSlot) {
-      // 新しいタイムスロットの場合、新しいデータポイントを追加
-      newVolumeData.push(newDataPoint);
-      // 最大30ポイントを維持
-      if (newVolumeData.length > 30) {
-        newVolumeData = newVolumeData.slice(-30);
-      }
+    if (contractIndex >= 0) {
+      // 既存の契約を更新
+      updatedContracts[contractIndex] = {
+        ...updatedContracts[contractIndex],
+        price,
+        cumulativeVolume,
+        isPositive
+      };
     } else {
-      // 同じタイムスロット内の場合、最後のデータポイントを更新
-      newVolumeData[newVolumeData.length - 1] = newDataPoint;
+      // 新しい契約を追加
+      updatedContracts.push({
+        id: contractId,
+        name,
+        price,
+        cumulativeVolume,
+        isPositive
+      });
     }
     
-    console.log("Chart data:", newVolumeData);
-    setVolumeData(newVolumeData);
+    // 更新された契約リストを設定
+    setContracts(updatedContracts);
   };
-
+  
   // 契約選択の変更ハンドラ
   const handleContractChange = (contractId) => {
     // 以前の契約の購読を解除

@@ -9,6 +9,7 @@ class WebSocketClient {
       onDisconnect: () => {},
       onMarketData: () => {},
       onDepthData: () => {},
+      onQuoteData: () => {},
       onError: () => {}
     };
     this.contractSubscriptions = new Set();
@@ -101,6 +102,7 @@ class WebSocketClient {
       this.marketSocket.on('GatewayQuote', (contractId, data) => {
         // 相場データ
         console.log(`相場データ受信: ${contractId}`, data);
+        this.callbacks.onQuoteData(contractId, data);
       });
       
       this.marketSocket.on('GatewayTrade', (contractId, data) => {
